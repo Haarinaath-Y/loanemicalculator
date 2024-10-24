@@ -20,15 +20,16 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
     for month in range(1, int(num_payments) + 1):
         interest = round(balance * monthly_rate, 2)  # Round interest to 2 decimals
         principal_payment = round(emi - interest, 2)  # Round principal payment to 2 decimals
-        if extra_payments and month in extra_payments:
-            principal_payment += extra_payments[month]
-            principal_payment = round(principal_payment, 2)  # Round total principal payment to 2 decimals
+        extra_payment_amount = extra_payments.get(month, 0)  # Get extra payment for the month
+        principal_payment += extra_payment_amount  # Add extra payment to principal payment
         balance -= principal_payment
         total_interest += interest
+
         schedule.append({
             'Month': month,
             'Interest Payment': interest,
             'Principal Payment': principal_payment,
+            'Extra Payment': extra_payment_amount,  # Add extra payment to the schedule
             'Remaining Balance': max(0, round(balance, 2))  # Ensure remaining balance never goes below 0
         })
         if balance <= 0:
@@ -60,6 +61,7 @@ st.subheader("Amortization Schedule", divider=True)
 st.dataframe(schedule.style.format({
     'Interest Payment': "₹{:,.2f}",
     'Principal Payment': "₹{:,.2f}",
+    'Extra Payment': "₹{:,.2f}",
     'Remaining Balance': "₹{:,.2f}"
 }))
 
