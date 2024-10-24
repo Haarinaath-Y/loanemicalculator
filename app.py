@@ -14,6 +14,9 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
     emi, num_payments = calculate_emi(principal, rate, tenure)
     monthly_rate = rate / (12 * 100)
 
+    # Ensure extra_payments is a dictionary
+    extra_payments = extra_payments or {}
+
     schedule = []
     balance = principal
     total_interest = 0
@@ -46,7 +49,10 @@ extra_payment = st.text_input("Extra Payments (format: {month: amount})")
 
 # Parse extra payments input
 if extra_payment:
-    extra_payment_dict = eval(extra_payment)
+    try:
+        extra_payment_dict = eval(extra_payment)  # Use eval carefully in a real app
+    except:
+        extra_payment_dict = {}
 else:
     extra_payment_dict = {}
 
