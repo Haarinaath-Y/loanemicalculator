@@ -141,15 +141,15 @@ def main():
 
     interest_saved_round = round(interest_saved, 2)
 
-    total_interest_format = format_inr(total_interest)
-    total_interest_no_extra_format = format_inr(total_interest_no_extra)
-    interest_saved = format_inr(interest_saved_round)
+    total_interest_format = currency(total_interest, selected_currency, locale=locale)
+    total_interest_no_extra_format = currency(total_interest_no_extra, selected_currency, locale=locale)
+    interest_saved = currency(interest_saved_round, selected_currency, locale=locale)
 
     total_amount_paid = total_interest + loan_amount
-    total_amount_paid = format_inr(total_amount_paid)
+    total_amount_paid = currency(total_amount_paid, selected_currency, locale=locale)
 
     total_amount_no_extra_paid = total_interest_no_extra + loan_amount
-    total_amount_no_extra_paid = format_inr(total_amount_no_extra_paid)
+    total_amount_no_extra_paid = currency(total_amount_no_extra_paid, selected_currency, locale=locale)
 
     st.subheader('Loan Details With Extra Payments', divider=True)
     # Display saved months and interest
