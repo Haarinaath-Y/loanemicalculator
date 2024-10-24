@@ -16,6 +16,7 @@ def calculate_emi(principal, rate, tenure):
     emi = (principal * monthly_rate * (1 + monthly_rate) ** num_payments) / ((1 + monthly_rate) ** num_payments - 1)
     return round(emi, 2), num_payments  # Round EMI to 2 decimals
 
+
 # Amortization with extra payments
 def amortization_schedule(principal, rate, tenure, extra_payments=None):
     emi, num_payments = calculate_emi(principal, rate, tenure)
@@ -46,7 +47,9 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
             break
     return pd.DataFrame(schedule), round(total_interest, 2), len(schedule)  # Return total months as well
 
+
 # Streamlit app layout
+st.set_page_config(page_title='Mortgage Loan Calculator', page_icon='💸')
 st.title('Mortgage Loan Calculator')
 
 loan_amount = st.number_input("Total Loan Amount", value=3500000)
