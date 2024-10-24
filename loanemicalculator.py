@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from babel.numbers import format_currency
+import re
 
 
 # Currency-Locale Mapping
@@ -23,17 +24,10 @@ def currency(amount, currency_selection, locale):
     return a
 
 
-def format_inr(amount):
-    return format_currency(amount, 'INR', locale='en_IN')
-
-
-import re
-
 # Helper function to strip currency symbols, commas, and convert to float
 def strip_currency(value):
     # Use regular expressions to remove non-numeric characters (except '.')
     return float(re.sub(r'[^\d.]+', '', value))
-
 
 
 # EMI Calculation
