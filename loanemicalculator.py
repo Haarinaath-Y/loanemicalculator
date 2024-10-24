@@ -116,7 +116,7 @@ def main():
     st.subheader("Principal Reduction Area Chart", divider=True)
 
     # Clip any negative remaining balances
-    schedule['Remaining Balance'] = schedule['Remaining Balance'].clip(lower=0)
+    schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(lambda x: float(x.replace(selected_currency, '').replace(',', '').strip()))
 
     # Plot the area chart with remaining principal (balance) over time
     schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
