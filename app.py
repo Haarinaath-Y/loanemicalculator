@@ -64,20 +64,30 @@ schedule_with_extra['Remaining Balance'] = schedule_with_extra['Remaining Balanc
 schedule_no_extra['Year'] = (schedule_no_extra['Month'] / 12).apply(np.floor)
 schedule_with_extra['Year'] = (schedule_with_extra['Month'] / 12).apply(np.floor)
 
+# Add initial loan amount to both schedules at the start
+initial_entry_no_extra = pd.DataFrame({
+    'Month': [0],
+    'Interest Payment': [0],
+    'Principal Payment': [0],
+    'Remaining Balance': [loan_amount],
+    'Year': [0]
+})
+
+initial_entry_with_extra = pd.DataFrame({
+    'Month': [0],
+    'Interest Payment': [0],
+    'Principal Payment': [0],
+    'Remaining Balance': [loan_amount],
+    'Year': [0]
+})
+
+# Concatenate the initial entries with the respective schedules
+schedule_no_extra = pd.concat([initial_entry_no_extra, schedule_no_extra], ignore_index=True)
+schedule_with_extra = pd.concat([initial_entry_with_extra, schedule_with_extra], ignore_index=True)
+
 # Group data by year for plotting
 chart_data_no_extra = schedule_no_extra[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
 chart_data_with_extra = schedule_with_extra[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
-
-# Ensure both datasets are of equal length
-max_length = max(len(chart_data_no_extra), len(chart_data_with_extra))
-
-# Fill missing values with zeros to match lengths
-chart_data_no_extra = chart_data_no_extra.reindex(range(max_length), fill_value=0)
-chart_data_with_extra = chart_data_with_extra.reindex(range(max_length), fill_value=0)
-
-# Set initial loan amounts at the start for both scenarios
-chart_data_no_extra.loc[0, 'Remaining Balance'] = loan_amount
-chart_data_with_extra.loc[0, 'Remaining Balance'] = loan_amount
 
 # Plot the area chart for both scenarios
 st.subheader("Principal Reduction Area Chart", divider=True)
