@@ -40,10 +40,10 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
 # Streamlit app layout
 st.title('Mortgage Loan Calculator')
 
-loan_amount = st.number_input("Total Loan Amount", value=500000.00)
-loan_tenure = st.number_input("Loan Tenure (years)", value=20)
-interest_rate = st.number_input("Interest Rate (%)", value=7.5)
-extra_payment = st.text_input("Extra Payments (format: {month: amount})", value="")
+loan_amount = st.number_input("Total Loan Amount", min_value=0,max_value=50000000,step=1)
+loan_tenure = st.number_input("Loan Tenure (years)")
+interest_rate = st.number_input("Interest Rate (%)")
+extra_payment = st.text_input("Extra Payments (format: {month: amount})")
 
 # Parse extra payments input
 if extra_payment:
@@ -55,7 +55,7 @@ else:
 schedule, total_interest = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
 
 # Display the amortization schedule
-st.write("Amortization Schedule")
+st.subheader("Amortization Schedule", divider=True)
 st.dataframe(schedule.style.format({
     'Interest Payment': "₹{:,.2f}",
     'Principal Payment': "₹{:,.2f}",
@@ -67,7 +67,8 @@ schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
 chart_data = schedule[['Year', 'Principal Payment']].groupby('Year').sum().reset_index()
 chart_data['Principal Payment'] = chart_data['Principal Payment'].apply(lambda x: round(x, 2))
 
+st.subheader("Area Chart", divider=True)
 st.area_chart(chart_data.set_index('Year'))
 
 # Display saved months and interest
-st.write(f"Total Interest Paid: ${total_interest}")
+st.write(f"Total Interest Paid: ₹{total_interest}")
