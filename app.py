@@ -3,8 +3,12 @@ import pandas as pd
 import numpy as np
 import locale
 
-# Set the locale to US English
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+# Try to set the locale to a supported one
+try:
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Replace with a supported locale
+except locale.Error:
+    st.error("The requested locale is not supported on this system. Defaulting to the system's locale.")
+    locale.setlocale(locale.LC_ALL, '')  # Use default local
 
 
 # EMI Calculation
