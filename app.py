@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import locale
 
-# Try to set the locale to a supported one
+# Attempt to set the locale
 try:
-    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Replace with a supported locale
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Change to a locale that is available on your system
 except locale.Error:
     st.error("The requested locale is not supported on this system. Defaulting to the system's locale.")
-    locale.setlocale(locale.LC_ALL, '')  # Use default local
+    locale.setlocale(locale.LC_ALL, '')  # Fallback to default locale
 
 
 # EMI Calculation
@@ -98,7 +98,12 @@ months_reduced = total_months_no_extra - total_months
 
 interest_saved_round = round(interest_saved, 2)
 
-formatted_currency = locale.currency(interest_saved_round, grouping=True)
+# Formatting the numbers using locale
+try:
+    formatted_currency = locale.currency(interest_saved_round, grouping=True)
+except ValueError as e:
+    st.error(f"Currency formatting error: {e}")
+    formatted_currency = f"${interest_saved_round:,.2f}"  # Fallback to manual formatting
 
 # Display saved months and interest
 st.write(f"Total Interest Paid Without Extra Payments: **₹{total_interest_no_extra}**")
