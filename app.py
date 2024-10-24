@@ -87,8 +87,10 @@ st.area_chart(chart_data.set_index('Year'))
 interest_saved = total_interest_no_extra - total_interest
 months_reduced = total_months_no_extra - total_months
 
+interest_saved_round = round(interest_saved, 2)
+
 # Display saved months and interest
-st.write(f"Total Interest Paid Without Extra Payments: ₹{total_interest_no_extra}")
-st.write(f"Total Interest Paid With Extra Payments: ₹{total_interest}")
-st.write(f"Interest Saved: ₹{interest_saved}")
-st.write(f"Months Reduced: {months_reduced} months")
+st.write(f"Total Interest Paid Without Extra Payments: **₹{total_interest_no_extra}**")
+st.write(f"Total Interest Paid With Extra Payments: **₹{total_interest}**")
+st.write(f"Interest Saved: **₹{interest_saved_round}**")
+st.write(f"Months Reduced: **{months_reduced} months**")
