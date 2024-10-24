@@ -1,6 +1,15 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import locale
+
+# Set the locale to Indian format
+locale.setlocale(locale.LC_ALL, 'en_IN.UTF-8')
+
+
+# Helper function to format numbers in Indian numerical system
+def format_inr(value):
+    return locale.format_string("%d", value, grouping=True)
 
 
 # EMI Calculation
@@ -19,6 +28,7 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
     schedule = []
     balance = principal
     total_interest = 0
+    months_saved = 0
     for month in range(1, int(num_payments) + 1):
         interest = round(balance * monthly_rate, 2)  # Round interest to 2 decimals
         principal_payment = round(emi - interest, 2)  # Round principal payment to 2 decimals
@@ -34,8 +44,9 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
             'Remaining Balance': max(0, round(balance, 2))  # Ensure remaining balance never goes below 0
         })
         if balance <= 0:
+            months_saved = num_payments - month  # Calculate how many months are saved
             break
-    return pd.DataFrame(schedule), round(total_interest, 2)  # Round total interest to 2 decimals
+    return pd.DataFrame(schedule), round(total_interest, 2), months_saved  # Round total interest to 2 decimals
 
 
 # Streamlit app layout
@@ -52,15 +63,18 @@ if extra_payment:
 else:
     extra_payment_dict = {}
 
-# Calculate EMI and Amortization
-schedule, total_interest = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
+# Calculate EMI and Amortization without extra payments (for comparison)
+_, total_interest_no_extra, _ = amortization_schedule(loan_amount, interest_rate, loan_tenure)
+
+# Calculate EMI and Amortization with extra payments
+schedule, total_interest_with_extra, months_saved = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
 
 # Display the amortization schedule
 st.subheader("Amortization Schedule", divider=True)
 st.dataframe(schedule.style.format({
-    'Interest Payment': "₹{:,.2f}",
-    'Principal Payment': "₹{:,.2f}",
-    'Remaining Balance': "₹{:,.2f}"
+    'Interest Payment': "₹{:,.2f}".format,
+    'Principal Payment': "₹{:,.2f}".format,
+    'Remaining Balance': "₹{:,.2f}".format
 }))
 
 st.subheader("Principal Reduction Area Chart", divider=True)
@@ -75,5 +89,12 @@ chart_data = schedule[['Year', 'Remaining Balance']].groupby('Year').last().rese
 # Plot the area chart
 st.area_chart(chart_data.set_index('Year'))
 
-# Display saved months and interest
-st.write(f"Total Interest Paid: ₹{total_interest}")
+# Total Interest Paid with Extra Payments
+st.write(f"Total Interest Paid (with extra payments): ₹{format_inr(total_interest_with_extra)}")
+
+# Interest Saved Calculation
+interest_saved = total_interest_no_extra - total_interest_with_extra
+st.write(f"Total Interest Saved: ₹{format_inr(interest_saved)}")
+
+# Display saved months and interest saved
+st.write(f"Months Reduced Due to Extra Payments: {months_saved} months")
