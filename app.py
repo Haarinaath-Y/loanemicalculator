@@ -62,12 +62,16 @@ st.dataframe(schedule.style.format({
     'Remaining Balance': "₹{:,.2f}"
 }))
 
+st.subheader("Area Chart", divider=True)
+
 # Display principal reduction over time (chart)
 schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
-chart_data = schedule[['Year', 'Principal Payment']].groupby('Year').sum().reset_index()
-chart_data['Principal Payment'] = chart_data['Principal Payment'].apply(lambda x: round(x, 2))
+schedule['Remaining Balance'] = schedule['Remaining Balance'].clip(lower=0)  # Set negative balances to zero
 
-st.subheader("Area Chart", divider=True)
+# Group by year and sum the principal payments
+chart_data = schedule[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
+
+# Plot the area chart with the remaining balance on the y-axis
 st.area_chart(chart_data.set_index('Year'))
 
 # Display saved months and interest
