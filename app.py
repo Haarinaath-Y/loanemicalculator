@@ -110,14 +110,14 @@ total_amount_paid = format_inr(total_amount_paid)
 total_amount_no_extra_paid = total_interest_no_extra + loan_amount
 total_amount_no_extra_paid = format_inr(total_amount_no_extra_paid)
 
-st.subheader('Loan Details with extra payments', divider=True)
+st.subheader('Loan Details With Extra Payments', divider=True)
 # Display saved months and interest
-st.write(f"Total Amount Paid with extra payments: **{total_amount_paid}**")
+st.write(f"Total Amount Paid With Extra Payments: **{total_amount_paid}**")
 st.write(f"Total Interest Paid With Extra Payments: **{total_interest_format}**")
 st.write(f"Interest Saved: **{interest_saved}**")
 st.write(f"Months Reduced: **{months_reduced} months**")
 
-st.subheader('Loan Details without extra payments', divider=True)
-st.write(f"Total Amount Paid without extra payments: **{total_amount_no_extra_paid}**")
+st.subheader('Loan Details Without Extra Payments', divider=True)
+st.write(f"Total Amount Paid Without Extra Payments: **{total_amount_no_extra_paid}**")
 st.write(f"Total Interest Paid Without Extra Payments: **{total_interest_no_extra_format}**")
 
