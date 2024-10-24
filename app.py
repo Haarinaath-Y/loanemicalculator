@@ -96,5 +96,5 @@ formatted_currency = format_currency(interest_saved_round, 'INR', locale='en_IN'
 # Display saved months and interest
 st.write(f"Total Interest Paid Without Extra Payments: **₹{total_interest_no_extra}**")
 st.write(f"Total Interest Paid With Extra Payments: **₹{total_interest}**")
-st.write(f"Interest Saved: **₹{formatted_currency}**")
+st.write(f"Interest Saved: **{formatted_currency}**")
 st.write(f"Months Reduced: **{months_reduced} months**")
