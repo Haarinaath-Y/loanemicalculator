@@ -1,26 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import math
-
-
-def format_inr(value):
-    value_str = f"{value:,.2f}"  # Format with commas as usual
-    int_part, dec_part = value_str.split(".")  # Split into integer and decimal parts
-    int_part = int_part.replace(",", "")  # Remove existing commas
-
-    if len(int_part) > 3:
-        # Indian number formatting: first group of 3 digits, then groups of 2 digits
-        last_three = int_part[-3:]
-        rest = int_part[:-3]
-        rest = ",".join([rest[i:i+2] for i in range(0, len(rest), 2)])
-        formatted_int = rest + "," + last_three
-    else:
-        formatted_int = int_part
-
-    # Join back with the decimal part
-    return f"{formatted_int}.{dec_part}"
-
 
 # EMI Calculation
 def calculate_emi(principal, rate, tenure):
@@ -28,7 +8,6 @@ def calculate_emi(principal, rate, tenure):
     num_payments = tenure * 12  # Convert tenure to months
     emi = (principal * monthly_rate * (1 + monthly_rate) ** num_payments) / ((1 + monthly_rate) ** num_payments - 1)
     return round(emi, 2), num_payments  # Round EMI to 2 decimals
-
 
 # Amortization with extra payments
 def amortization_schedule(principal, rate, tenure, extra_payments=None):
@@ -38,7 +17,6 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
     schedule = []
     balance = principal
     total_interest = 0
-    months_saved = 0
     for month in range(1, int(num_payments) + 1):
         interest = round(balance * monthly_rate, 2)  # Round interest to 2 decimals
         principal_payment = round(emi - interest, 2)  # Round principal payment to 2 decimals
@@ -54,10 +32,8 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
             'Remaining Balance': max(0, round(balance, 2))  # Ensure remaining balance never goes below 0
         })
         if balance <= 0:
-            months_saved = num_payments - month  # Calculate how many months are saved
             break
-    return pd.DataFrame(schedule), round(total_interest, 2), months_saved  # Round total interest to 2 decimals
-
+    return pd.DataFrame(schedule), round(total_interest, 2), len(schedule)  # Return total months as well
 
 # Streamlit app layout
 st.title('Mortgage Loan Calculator')
@@ -73,18 +49,18 @@ if extra_payment:
 else:
     extra_payment_dict = {}
 
-# Calculate EMI and Amortization without extra payments (for comparison)
-_, total_interest_no_extra, _ = amortization_schedule(loan_amount, interest_rate, loan_tenure)
+# Calculate without extra payments (to compare interest and months)
+schedule_no_extra, total_interest_no_extra, total_months_no_extra = amortization_schedule(loan_amount, interest_rate, loan_tenure)
 
-# Calculate EMI and Amortization with extra payments
-schedule, total_interest_with_extra, months_saved = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
+# Calculate with extra payments
+schedule, total_interest, total_months = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
 
 # Display the amortization schedule
 st.subheader("Amortization Schedule", divider=True)
 st.dataframe(schedule.style.format({
-    'Interest Payment': lambda x: "₹" + format_inr(x),
-    'Principal Payment': lambda x: "₹" + format_inr(x),
-    'Remaining Balance': lambda x: "₹" + format_inr(x)
+    'Interest Payment': "₹{:,.2f}",
+    'Principal Payment': "₹{:,.2f}",
+    'Remaining Balance': "₹{:,.2f}"
 }))
 
 st.subheader("Principal Reduction Area Chart", divider=True)
@@ -99,12 +75,12 @@ chart_data = schedule[['Year', 'Remaining Balance']].groupby('Year').last().rese
 # Plot the area chart
 st.area_chart(chart_data.set_index('Year'))
 
-# Total Interest Paid with Extra Payments
-st.write(f"Total Interest Paid (with extra payments): ₹{format_inr(total_interest_with_extra)}")
+# Calculate interest saved and months reduced
+interest_saved = total_interest_no_extra - total_interest
+months_reduced = total_months_no_extra - total_months
 
-# Interest Saved Calculation
-interest_saved = total_interest_no_extra - total_interest_with_extra
-st.write(f"Total Interest Saved: ₹{format_inr(interest_saved)}")
-
-# Display saved months and interest saved
-st.write(f"Months Reduced Due to Extra Payments: {months_saved} months")
+# Display saved months and interest
+st.write(f"Total Interest Paid Without Extra Payments: ₹{total_interest_no_extra}")
+st.write(f"Total Interest Paid With Extra Payments: ₹{total_interest}")
+st.write(f"Interest Saved: ₹{interest_saved}")
+st.write(f"Months Reduced: {months_reduced} months")
