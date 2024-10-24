@@ -19,7 +19,7 @@ CURRENCY_LOCALE_MAP = {
 
 
 def currency(amount, currency_selection, locale):
-    a = format_currency(amount, currency_selection, locale)
+    a = format_currency(amount, currency_selection, locale=locale)
     return a
 
 
