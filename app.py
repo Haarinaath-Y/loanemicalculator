@@ -40,9 +40,9 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
 # Streamlit app layout
 st.title('Mortgage Loan Calculator')
 
-loan_amount = st.number_input("Total Loan Amount", value=500000.00, format="%.2f")
-loan_tenure = st.number_input("Loan Tenure (years)", value=20, format="%.2f")
-interest_rate = st.number_input("Interest Rate (%)", value=7.5, format="%.2f")
+loan_amount = st.number_input("Total Loan Amount", value=500000.00)
+loan_tenure = st.number_input("Loan Tenure (years)", value=20)
+interest_rate = st.number_input("Interest Rate (%)", value=7.5)
 extra_payment = st.text_input("Extra Payments (format: {month: amount})", value="")
 
 # Parse extra payments input
