@@ -4,9 +4,27 @@ import numpy as np
 from babel.numbers import format_currency
 
 
-def format_inr(amount):
-    a = format_currency(amount, 'INR', locale='en_IN')
+# Currency-Locale Mapping
+CURRENCY_LOCALE_MAP = {
+    'USD': 'en_US',  # US Dollar
+    'EUR': 'fr_FR',  # Euro (France)
+    'INR': 'en_IN',  # Indian Rupee
+    'GBP': 'en_GB',  # British Pound
+    'JPY': 'ja_JP',  # Japanese Yen
+    'CNY': 'zh_CN',  # Chinese Yuan
+    'AUD': 'en_AU',  # Australian Dollar
+    'CAD': 'en_CA',  # Canadian Dollar
+    'CHF': 'de_CH'   # Swiss Franc (German-speaking part of Switzerland)
+}
+
+
+def currency(amount, currency_selection, locale):
+    a = format_currency(amount, currency_selection, locale)
     return a
+
+
+def format_inr(amount):
+    return format_currency(amount, 'INR', locale='en_IN')
 
 
 # EMI Calculation
@@ -48,12 +66,18 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
     return pd.DataFrame(schedule), round(total_interest, 2), len(schedule)  # Return total months as well
 
 
-# Streamlit app layout
-st.set_page_config(page_title='Mortgage Loan Calculator', page_icon='💸')
-st.title('Mortgage Loan Calculator')
-
-
 def main():
+
+    # Streamlit app layout
+    st.set_page_config(page_title='Mortgage Loan Calculator', page_icon='💸')
+    st.title('Mortgage Loan Calculator')
+
+    # Currency selection dropdown
+    selected_currency = st.selectbox("Select Currency", options=list(CURRENCY_LOCALE_MAP.keys()))
+
+    # Fetch locale based on selected currency
+    locale = CURRENCY_LOCALE_MAP[selected_currency]
+
     loan_amount = st.number_input("Total Loan Amount", value=3500000)
     loan_tenure = st.number_input("Loan Tenure (years)", value=20)
     interest_rate = st.number_input("Interest Rate (%)", value=9.35)
@@ -69,7 +93,7 @@ def main():
         extra_payment_dict = {}
 
     emi, num_payments = calculate_emi(loan_amount, interest_rate, loan_tenure)
-    emi = format_inr(emi)
+    emi = currency(emi, selected_currency, locale)
     st.info(f'Monthly Installment: **{emi}**')
 
     # Calculate without extra payments (to compare interest and months)
