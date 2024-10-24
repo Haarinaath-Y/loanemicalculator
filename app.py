@@ -68,9 +68,16 @@ schedule_with_extra['Year'] = (schedule_with_extra['Month'] / 12).apply(np.floor
 chart_data_no_extra = schedule_no_extra[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
 chart_data_with_extra = schedule_with_extra[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
 
-# Set initial loan amounts to both charts for proper comparison
-chart_data_no_extra['Remaining Balance'] = np.concatenate([[loan_amount], chart_data_no_extra['Remaining Balance'].values])
-chart_data_with_extra['Remaining Balance'] = np.concatenate([[loan_amount], chart_data_with_extra['Remaining Balance'].values])
+# Ensure both datasets are of equal length
+max_length = max(len(chart_data_no_extra), len(chart_data_with_extra))
+
+# Fill missing values with zeros to match lengths
+chart_data_no_extra = chart_data_no_extra.reindex(range(max_length), fill_value=0)
+chart_data_with_extra = chart_data_with_extra.reindex(range(max_length), fill_value=0)
+
+# Set initial loan amounts at the start for both scenarios
+chart_data_no_extra.loc[0, 'Remaining Balance'] = loan_amount
+chart_data_with_extra.loc[0, 'Remaining Balance'] = loan_amount
 
 # Plot the area chart for both scenarios
 st.subheader("Principal Reduction Area Chart", divider=True)
@@ -99,10 +106,8 @@ st.altair_chart(chart, use_container_width=True)
 interest_saved = total_interest_no_extra - total_interest
 months_reduced = total_months_no_extra - total_months
 
-interest_saved_round = round(interest_saved, 2)
-
 # Display saved months and interest
 st.write(f"Total Interest Paid Without Extra Payments: ₹{total_interest_no_extra}")
 st.write(f"Total Interest Paid With Extra Payments: ₹{total_interest}")
-st.write(f"Interest Saved: ₹{interest_saved_round}")
+st.write(f"Interest Saved: ₹{interest_saved}")
 st.write(f"Months Reduced: {months_reduced} months")
