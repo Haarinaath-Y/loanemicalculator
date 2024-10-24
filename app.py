@@ -57,9 +57,9 @@ schedule, total_interest = amortization_schedule(loan_amount, interest_rate, loa
 # Display the amortization schedule
 st.write("Amortization Schedule")
 st.dataframe(schedule.style.format({
-    'Interest Payment': "${:,.2f}",
-    'Principal Payment': "${:,.2f}",
-    'Remaining Balance': "${:,.2f}"
+    'Interest Payment': "₹{:,.2f}",
+    'Principal Payment': "₹{:,.2f}",
+    'Remaining Balance': "₹{:,.2f}"
 }))
 
 # Display principal reduction over time (chart)
