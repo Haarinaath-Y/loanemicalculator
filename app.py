@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import altair as alt  # Using Altair for better chart customization
+import altair as alt
 
 # EMI Calculation
 def calculate_emi(principal, rate, tenure):
@@ -67,6 +67,10 @@ schedule_with_extra['Year'] = (schedule_with_extra['Month'] / 12).apply(np.floor
 # Group data by year for plotting
 chart_data_no_extra = schedule_no_extra[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
 chart_data_with_extra = schedule_with_extra[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
+
+# Set initial loan amounts to both charts for proper comparison
+chart_data_no_extra['Remaining Balance'] = np.concatenate([[loan_amount], chart_data_no_extra['Remaining Balance'].values])
+chart_data_with_extra['Remaining Balance'] = np.concatenate([[loan_amount], chart_data_with_extra['Remaining Balance'].values])
 
 # Plot the area chart for both scenarios
 st.subheader("Principal Reduction Area Chart", divider=True)
