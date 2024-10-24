@@ -96,12 +96,12 @@ months_reduced = total_months_no_extra - total_months
 
 interest_saved_round = round(interest_saved, 2)
 
-total_interest = format_inr(total_interest)
-total_interest_no_extra = format_inr(total_interest_no_extra)
+total_interest_format = format_inr(total_interest)
+total_interest_no_extra_format = format_inr(total_interest_no_extra)
 interest_saved = format_inr(interest_saved_round)
 
 # Display saved months and interest
-st.write(f"Total Interest Paid Without Extra Payments: **₹{total_interest_no_extra}**")
-st.write(f"Total Interest Paid With Extra Payments: **₹{total_interest}**")
+st.write(f"Total Interest Paid Without Extra Payments: **{total_interest_no_extra}**")
+st.write(f"Total Interest Paid With Extra Payments: **{total_interest_no_extra_format}**")
 st.write(f"Interest Saved: **{interest_saved}**")
 st.write(f"Months Reduced: **{months_reduced} months**")
