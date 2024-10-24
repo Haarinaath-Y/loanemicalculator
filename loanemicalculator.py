@@ -27,6 +27,11 @@ def format_inr(amount):
     return format_currency(amount, 'INR', locale='en_IN')
 
 
+# Helper function to strip currency symbols and convert to float
+def strip_currency(value, currency_symbol):
+    return float(value.replace(currency_symbol, '').replace(',', '').strip())
+
+
 # EMI Calculation
 def calculate_emi(principal, rate, tenure):
     monthly_rate = rate / (12 * 100)  # Convert annual rate to monthly
@@ -116,7 +121,9 @@ def main():
     st.subheader("Principal Reduction Area Chart", divider=True)
 
     # Clip any negative remaining balances
-    schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(lambda x: float(x.replace(selected_currency, '').replace(',', '').strip()))
+    schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(
+        lambda x: strip_currency(x, selected_currency)
+    )  # Strip currency symbols and commas before converting to float
 
     # Plot the area chart with remaining principal (balance) over time
     schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
