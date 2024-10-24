@@ -1,6 +1,11 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import locale
+
+# Set the locale to US English
+locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+
 
 # EMI Calculation
 def calculate_emi(principal, rate, tenure):
@@ -89,8 +94,10 @@ months_reduced = total_months_no_extra - total_months
 
 interest_saved_round = round(interest_saved, 2)
 
+formatted_currency = locale.currency(interest_saved_round, grouping=True)
+
 # Display saved months and interest
 st.write(f"Total Interest Paid Without Extra Payments: **₹{total_interest_no_extra}**")
 st.write(f"Total Interest Paid With Extra Payments: **₹{total_interest}**")
-st.write(f"Interest Saved: **₹{interest_saved_round}**")
+st.write(f"Interest Saved: **₹{formatted_currency}**")
 st.write(f"Months Reduced: **{months_reduced} months**")
