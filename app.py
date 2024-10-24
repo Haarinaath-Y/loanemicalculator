@@ -4,6 +4,11 @@ import numpy as np
 from babel.numbers import format_currency
 
 
+def format_inr(amount):
+    a = format_currency(amount, 'INR', locale='en_IN')
+    return a
+
+
 # EMI Calculation
 def calculate_emi(principal, rate, tenure):
     monthly_rate = rate / (12 * 100)  # Convert annual rate to monthly
@@ -91,7 +96,7 @@ months_reduced = total_months_no_extra - total_months
 
 interest_saved_round = round(interest_saved, 2)
 
-formatted_currency = format_currency(interest_saved_round, 'INR', locale='en_IN')
+formatted_currency = format_inr(interest_saved_round)
 
 # Display saved months and interest
 st.write(f"Total Interest Paid Without Extra Payments: **₹{total_interest_no_extra}**")
