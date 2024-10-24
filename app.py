@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import altair as alt
 
 # EMI Calculation
 def calculate_emi(principal, rate, tenure):
@@ -54,63 +53,27 @@ else:
 schedule_no_extra, total_interest_no_extra, total_months_no_extra = amortization_schedule(loan_amount, interest_rate, loan_tenure)
 
 # Calculate with extra payments
-schedule_with_extra, total_interest, total_months = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
+schedule, total_interest, total_months = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
 
-# Clip any negative remaining balances
-schedule_no_extra['Remaining Balance'] = schedule_no_extra['Remaining Balance'].clip(lower=0)
-schedule_with_extra['Remaining Balance'] = schedule_with_extra['Remaining Balance'].clip(lower=0)
+# Display the amortization schedule
+st.subheader("Amortization Schedule", divider=True)
+st.dataframe(schedule.style.format({
+    'Interest Payment': "₹{:,.2f}",
+    'Principal Payment': "₹{:,.2f}",
+    'Remaining Balance': "₹{:,.2f}"
+}))
 
-# Add Year column
-schedule_no_extra['Year'] = (schedule_no_extra['Month'] / 12).apply(np.floor)
-schedule_with_extra['Year'] = (schedule_with_extra['Month'] / 12).apply(np.floor)
-
-# Add initial loan amount to both schedules at the start
-initial_entry_no_extra = pd.DataFrame({
-    'Month': [0],
-    'Interest Payment': [0],
-    'Principal Payment': [0],
-    'Remaining Balance': [loan_amount],
-    'Year': [0]
-})
-
-initial_entry_with_extra = pd.DataFrame({
-    'Month': [0],
-    'Interest Payment': [0],
-    'Principal Payment': [0],
-    'Remaining Balance': [loan_amount],
-    'Year': [0]
-})
-
-# Concatenate the initial entries with the respective schedules
-schedule_no_extra = pd.concat([initial_entry_no_extra, schedule_no_extra], ignore_index=True)
-schedule_with_extra = pd.concat([initial_entry_with_extra, schedule_with_extra], ignore_index=True)
-
-# Group data by year for plotting
-chart_data_no_extra = schedule_no_extra[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
-chart_data_with_extra = schedule_with_extra[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
-
-# Plot the area chart for both scenarios
 st.subheader("Principal Reduction Area Chart", divider=True)
 
-# Combine the two datasets
-chart_data_no_extra['Scenario'] = 'Without Extra Payments'
-chart_data_with_extra['Scenario'] = 'With Extra Payments'
-combined_chart_data = pd.concat([chart_data_no_extra, chart_data_with_extra])
+# Clip any negative remaining balances
+schedule['Remaining Balance'] = schedule['Remaining Balance'].clip(lower=0)
 
-# Plot using Altair for dual scenarios
-chart = alt.Chart(combined_chart_data).mark_area().encode(
-    x=alt.X('Year:O', title='Year'),
-    y=alt.Y('Remaining Balance:Q', title='Remaining Balance (Principal)'),
-    color=alt.Color('Scenario:N', scale=alt.Scale(domain=['Without Extra Payments', 'With Extra Payments'],
-                                                  range=['#1f77b4', '#aec7e8'])),  # Light color for extra payments
-    opacity=alt.condition(
-        alt.datum.Scenario == 'With Extra Payments', alt.value(0.6), alt.value(1.0))  # Lighten the "with extra" scenario
-).properties(
-    width=700,
-    height=400
-)
+# Plot the area chart with remaining principal (balance) over time
+schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
+chart_data = schedule[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
 
-st.altair_chart(chart, use_container_width=True)
+# Plot the area chart
+st.area_chart(chart_data.set_index('Year'))
 
 # Calculate interest saved and months reduced
 interest_saved = total_interest_no_extra - total_interest
