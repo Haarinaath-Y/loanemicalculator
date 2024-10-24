@@ -2,20 +2,29 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# Custom function to format numbers in Indian numerical system
+# Corrected custom function to format numbers in Indian numerical system
 def format_inr(value):
     value_str = f"{value:,.2f}"  # Format as comma-separated string
-    value_str = value_str.replace(",", "X")  # Temporarily replace commas
-    if "." in value_str:
-        int_part, dec_part = value_str.split(".")
-    else:
-        int_part, dec_part = value_str, ""
+    int_part, dec_part = value_str.split(".")  # Split into integer and decimal parts
+    int_part = int(int_part.replace(",", ""))  # Remove existing commas for further formatting
 
-    # Modify to Indian format by adding commas after first three digits, then every two digits
-    if len(int_part) > 3:
-        int_part = int_part[:-3].replace(",", "") + "," + int_part[-3:]
-        int_part = int_part[:-6] + ",".join([int_part[-6+i: -4+i] for i in range(0, len(int_part[-6:]), 2)])
-    return int_part + "." + dec_part if dec_part else int_part
+    # Handle negative numbers
+    if int_part < 0:
+        sign = "-"
+        int_part = abs(int_part)
+    else:
+        sign = ""
+
+    # Format integer part in the Indian numbering system (thousands, lakhs, crores)
+    int_part_str = f"{int_part:,}"
+    int_part_str = int_part_str.replace(",", "X")  # Temporarily replace commas
+
+    # Add commas for Indian format (first 3 digits then every 2 digits)
+    if len(int_part_str) > 3:
+        int_part_str = int_part_str[:-3].replace("X", "") + "," + int_part_str[-3:]
+        int_part_str = int_part_str[:-6] + ",".join([int_part_str[-6 + i: -4 + i] for i in range(0, len(int_part_str[-6:]), 2)])
+
+    return f"{sign}{int_part_str}.{dec_part}"  # Return formatted value with decimals
 
 
 # EMI Calculation
