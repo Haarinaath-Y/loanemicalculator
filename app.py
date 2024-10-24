@@ -2,12 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+
 # EMI Calculation
 def calculate_emi(principal, rate, tenure):
     monthly_rate = rate / (12 * 100)  # Convert annual rate to monthly
     num_payments = tenure * 12  # Convert tenure to months
     emi = (principal * monthly_rate * (1 + monthly_rate) ** num_payments) / ((1 + monthly_rate) ** num_payments - 1)
     return round(emi, 2), num_payments  # Round EMI to 2 decimals
+
 
 # Amortization with extra payments
 def amortization_schedule(principal, rate, tenure, extra_payments=None):
@@ -79,8 +81,10 @@ st.area_chart(chart_data.set_index('Year'))
 interest_saved = total_interest_no_extra - total_interest
 months_reduced = total_months_no_extra - total_months
 
+interest_saved_round = round(interest_saved,2)
+
 # Display saved months and interest
 st.write(f"Total Interest Paid Without Extra Payments: ₹{total_interest_no_extra}")
 st.write(f"Total Interest Paid With Extra Payments: ₹{total_interest}")
-st.write(f"Interest Saved: ₹{interest_saved}")
+st.write(f"Interest Saved: ₹{interest_saved_round}")
 st.write(f"Months Reduced: {months_reduced} months")
