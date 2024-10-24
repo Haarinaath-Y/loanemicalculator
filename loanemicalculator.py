@@ -52,75 +52,80 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
 st.set_page_config(page_title='Mortgage Loan Calculator', page_icon='💸')
 st.title('Mortgage Loan Calculator')
 
-loan_amount = st.number_input("Total Loan Amount", value=3500000)
-loan_tenure = st.number_input("Loan Tenure (years)", value=20)
-interest_rate = st.number_input("Interest Rate (%)", value=9.35)
-extra_payment = st.text_input("Extra Payments (format: {month: amount})")
 
-# Parse extra payments input
-if extra_payment:
-    try:
-        extra_payment_dict = eval(extra_payment)  # Use eval carefully in a real app
-    except:
+def main():
+    loan_amount = st.number_input("Total Loan Amount", value=3500000)
+    loan_tenure = st.number_input("Loan Tenure (years)", value=20)
+    interest_rate = st.number_input("Interest Rate (%)", value=9.35)
+    extra_payment = st.text_input("Extra Payments (format: {month: amount})")
+
+    # Parse extra payments input
+    if extra_payment:
+        try:
+            extra_payment_dict = eval(extra_payment)  # Use eval carefully in a real app
+        except:
+            extra_payment_dict = {}
+    else:
         extra_payment_dict = {}
-else:
-    extra_payment_dict = {}
 
-emi, num_payments = calculate_emi(loan_amount, interest_rate, loan_tenure)
-emi = format_inr(emi)
-st.info(f'Monthly Installment: **{emi}**')
+    emi, num_payments = calculate_emi(loan_amount, interest_rate, loan_tenure)
+    emi = format_inr(emi)
+    st.info(f'Monthly Installment: **{emi}**')
 
-# Calculate without extra payments (to compare interest and months)
-schedule_no_extra, total_interest_no_extra, total_months_no_extra = amortization_schedule(loan_amount, interest_rate, loan_tenure)
+    # Calculate without extra payments (to compare interest and months)
+    schedule_no_extra, total_interest_no_extra, total_months_no_extra = amortization_schedule(loan_amount, interest_rate, loan_tenure)
 
-# Calculate with extra payments
-schedule, total_interest, total_months = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
+    # Calculate with extra payments
+    schedule, total_interest, total_months = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
 
-# Display the amortization schedule
-st.subheader("Amortization Schedule", divider=True)
-st.dataframe(schedule.style.format({
-    'Interest Payment': "₹{:,.2f}",
-    'Principal Payment': "₹{:,.2f}",
-    'Extra Payment': "₹{:,.2f}",
-    'Remaining Balance': "₹{:,.2f}"
-}),use_container_width=True)
+    # Display the amortization schedule
+    st.subheader("Amortization Schedule", divider=True)
+    st.dataframe(schedule.style.format({
+        'Interest Payment': "₹{:,.2f}",
+        'Principal Payment': "₹{:,.2f}",
+        'Extra Payment': "₹{:,.2f}",
+        'Remaining Balance': "₹{:,.2f}"
+    }),use_container_width=True)
 
-st.subheader("Principal Reduction Area Chart", divider=True)
+    st.subheader("Principal Reduction Area Chart", divider=True)
 
-# Clip any negative remaining balances
-schedule['Remaining Balance'] = schedule['Remaining Balance'].clip(lower=0)
+    # Clip any negative remaining balances
+    schedule['Remaining Balance'] = schedule['Remaining Balance'].clip(lower=0)
 
-# Plot the area chart with remaining principal (balance) over time
-schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
-chart_data = schedule[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
+    # Plot the area chart with remaining principal (balance) over time
+    schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
+    chart_data = schedule[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
 
-# Plot the area chart
-st.area_chart(chart_data.set_index('Year'))
+    # Plot the area chart
+    st.area_chart(chart_data.set_index('Year'))
 
-# Calculate interest saved and months reduced
-interest_saved = total_interest_no_extra - total_interest
-months_reduced = total_months_no_extra - total_months
+    # Calculate interest saved and months reduced
+    interest_saved = total_interest_no_extra - total_interest
+    months_reduced = total_months_no_extra - total_months
 
-interest_saved_round = round(interest_saved, 2)
+    interest_saved_round = round(interest_saved, 2)
 
-total_interest_format = format_inr(total_interest)
-total_interest_no_extra_format = format_inr(total_interest_no_extra)
-interest_saved = format_inr(interest_saved_round)
+    total_interest_format = format_inr(total_interest)
+    total_interest_no_extra_format = format_inr(total_interest_no_extra)
+    interest_saved = format_inr(interest_saved_round)
 
-total_amount_paid = total_interest + loan_amount
-total_amount_paid = format_inr(total_amount_paid)
+    total_amount_paid = total_interest + loan_amount
+    total_amount_paid = format_inr(total_amount_paid)
 
-total_amount_no_extra_paid = total_interest_no_extra + loan_amount
-total_amount_no_extra_paid = format_inr(total_amount_no_extra_paid)
+    total_amount_no_extra_paid = total_interest_no_extra + loan_amount
+    total_amount_no_extra_paid = format_inr(total_amount_no_extra_paid)
 
-st.subheader('Loan Details With Extra Payments', divider=True)
-# Display saved months and interest
-st.write(f"Total Amount Paid With Extra Payments: **{total_amount_paid}**")
-st.write(f"Total Interest Paid With Extra Payments: **{total_interest_format}**")
-st.write(f"Interest Saved: **{interest_saved}**")
-st.write(f"Months Reduced: **{months_reduced} months**")
+    st.subheader('Loan Details With Extra Payments', divider=True)
+    # Display saved months and interest
+    st.write(f"Total Amount Paid With Extra Payments: **{total_amount_paid}**")
+    st.write(f"Total Interest Paid With Extra Payments: **{total_interest_format}**")
+    st.write(f"Interest Saved: **{interest_saved}**")
+    st.write(f"Months Reduced: **{months_reduced} months**")
 
-st.subheader('Loan Details Without Extra Payments', divider=True)
-st.write(f"Total Amount Paid Without Extra Payments: **{total_amount_no_extra_paid}**")
-st.write(f"Total Interest Paid Without Extra Payments: **{total_interest_no_extra_format}**")
+    st.subheader('Loan Details Without Extra Payments', divider=True)
+    st.write(f"Total Amount Paid Without Extra Payments: **{total_amount_no_extra_paid}**")
+    st.write(f"Total Interest Paid Without Extra Payments: **{total_interest_no_extra_format}**")
 
+
+if __name__ == '__main__':
+    main()
