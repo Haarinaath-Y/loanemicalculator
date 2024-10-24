@@ -65,7 +65,7 @@ else:
 
 emi, num_payments = calculate_emi(loan_amount, interest_rate, loan_tenure)
 emi = format_inr(emi)
-st.info(f'Monthly Installment: {emi}')
+st.info(f'Monthly Installment: **{emi}**')
 
 # Calculate without extra payments (to compare interest and months)
 schedule_no_extra, total_interest_no_extra, total_months_no_extra = amortization_schedule(loan_amount, interest_rate, loan_tenure)
