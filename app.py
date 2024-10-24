@@ -31,18 +31,19 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
             'Month': month,
             'Interest Payment': interest,
             'Principal Payment': principal_payment,
-            'Remaining Balance': round(balance, 2)  # Round remaining balance to 2 decimals
+            'Remaining Balance': max(0, round(balance, 2))  # Ensure remaining balance never goes below 0
         })
         if balance <= 0:
             break
     return pd.DataFrame(schedule), round(total_interest, 2)  # Round total interest to 2 decimals
+
 
 # Streamlit app layout
 st.title('Mortgage Loan Calculator')
 
 loan_amount = st.number_input("Total Loan Amount", value=3500000)
 loan_tenure = st.number_input("Loan Tenure (years)", value=20)
-interest_rate = st.number_input("Interest Rate (%)",value=9.35)
+interest_rate = st.number_input("Interest Rate (%)", value=9.35)
 extra_payment = st.text_input("Extra Payments (format: {month: amount})")
 
 # Parse extra payments input
@@ -62,16 +63,16 @@ st.dataframe(schedule.style.format({
     'Remaining Balance': "₹{:,.2f}"
 }))
 
-st.subheader("Area Chart", divider=True)
+st.subheader("Principal Reduction Area Chart", divider=True)
 
-# Display principal reduction over time (chart)
+# Clip any negative remaining balances
+schedule['Remaining Balance'] = schedule['Remaining Balance'].clip(lower=0)
+
+# Plot the area chart with remaining principal (balance) over time
 schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
-schedule['Remaining Balance'] = schedule['Remaining Balance'].clip(lower=0)  # Set negative balances to zero
-
-# Group by year and sum the principal payments
 chart_data = schedule[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
 
-# Plot the area chart with the remaining balance on the y-axis
+# Plot the area chart
 st.area_chart(chart_data.set_index('Year'))
 
 # Display saved months and interest
