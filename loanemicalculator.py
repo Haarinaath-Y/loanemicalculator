@@ -104,17 +104,19 @@ def main():
 
     # Display the amortization schedule
     st.subheader("Amortization Schedule", divider=True)
-    st.dataframe(schedule.style.format({
-        'Interest Payment': "₹{:,.2f}",
-        'Principal Payment': "₹{:,.2f}",
-        'Extra Payment': "₹{:,.2f}",
-        'Remaining Balance': "₹{:,.2f}"
-    }),use_container_width=True)
+
+    # Format currency in the selected currency and locale
+    schedule['Interest Payment'] = schedule['Interest Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
+    schedule['Principal Payment'] = schedule['Principal Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
+    schedule['Extra Payment'] = schedule['Extra Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
+    schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
+
+    st.dataframe(schedule, use_container_width=True)
 
     st.subheader("Principal Reduction Area Chart", divider=True)
 
     # Clip any negative remaining balances
-    schedule['Remaining Balance'] = schedule['Remaining Balance'].clip(lower=0)
+    schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(lambda x: float(x.replace(selected_currency, '').replace(',', '').strip())).clip(lower=0)
 
     # Plot the area chart with remaining principal (balance) over time
     schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
