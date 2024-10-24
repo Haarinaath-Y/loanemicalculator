@@ -69,7 +69,7 @@ st.dataframe(schedule.style.format({
     'Principal Payment': "₹{:,.2f}",
     'Extra Payment': "₹{:,.2f}",
     'Remaining Balance': "₹{:,.2f}"
-}))
+}),use_container_width=True)
 
 st.subheader("Principal Reduction Area Chart", divider=True)
 
