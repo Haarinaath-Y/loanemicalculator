@@ -1,15 +1,21 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import locale
 
-# Set the locale to Indian format
-locale.setlocale(locale.LC_ALL, 'en_IN.UTF-8')
-
-
-# Helper function to format numbers in Indian numerical system
+# Custom function to format numbers in Indian numerical system
 def format_inr(value):
-    return locale.format_string("%d", value, grouping=True)
+    value_str = f"{value:,.2f}"  # Format as comma-separated string
+    value_str = value_str.replace(",", "X")  # Temporarily replace commas
+    if "." in value_str:
+        int_part, dec_part = value_str.split(".")
+    else:
+        int_part, dec_part = value_str, ""
+
+    # Modify to Indian format by adding commas after first three digits, then every two digits
+    if len(int_part) > 3:
+        int_part = int_part[:-3].replace(",", "") + "," + int_part[-3:]
+        int_part = int_part[:-6] + ",".join([int_part[-6+i: -4+i] for i in range(0, len(int_part[-6:]), 2)])
+    return int_part + "." + dec_part if dec_part else int_part
 
 
 # EMI Calculation
@@ -72,9 +78,9 @@ schedule, total_interest_with_extra, months_saved = amortization_schedule(loan_a
 # Display the amortization schedule
 st.subheader("Amortization Schedule", divider=True)
 st.dataframe(schedule.style.format({
-    'Interest Payment': "₹{:,.2f}".format,
-    'Principal Payment': "₹{:,.2f}".format,
-    'Remaining Balance': "₹{:,.2f}".format
+    'Interest Payment': lambda x: "₹" + format_inr(x),
+    'Principal Payment': lambda x: "₹" + format_inr(x),
+    'Remaining Balance': lambda x: "₹" + format_inr(x)
 }))
 
 st.subheader("Principal Reduction Area Chart", divider=True)
