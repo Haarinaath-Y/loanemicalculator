@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from babel.numbers import format_currency
 import re
+import altair as alt
 
 
 # Currency-Locale Mapping
@@ -103,35 +104,53 @@ def main():
     schedule_no_extra, total_interest_no_extra, total_months_no_extra = amortization_schedule(loan_amount, interest_rate, loan_tenure)
 
     # Calculate with extra payments
-    schedule, total_interest, total_months = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
+    schedule_extra, total_interest_extra, total_months_extra = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
+
+    # Add labels to distinguish between schedules
+    schedule_no_extra['Type'] = 'Without Extra Payments'
+    schedule_extra['Type'] = 'With Extra Payments'
+
+    # Combine the two schedules into one DataFrame
+    combined_schedule = pd.concat([schedule_no_extra, schedule_extra])
+
+    # Convert 'Month' to 'Year' for the x-axis
+    combined_schedule['Year'] = (combined_schedule['Month'] / 12).apply(np.floor)
+
+    # Strip currency formatting from the 'Remaining Balance' column
+    combined_schedule['Remaining Balance'] = combined_schedule['Remaining Balance'].apply(strip_currency)
 
     # Display the amortization schedule
     st.subheader("Amortization Schedule", divider=True)
 
     # Format currency in the selected currency and locale
-    schedule['Interest Payment'] = schedule['Interest Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
-    schedule['Principal Payment'] = schedule['Principal Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
-    schedule['Extra Payment'] = schedule['Extra Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
-    schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
+    schedule_extra['Interest Payment'] = schedule_extra['Interest Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
+    schedule_extra['Principal Payment'] = schedule_extra['Principal Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
+    schedule_extra['Extra Payment'] = schedule_extra['Extra Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
+    schedule_extra['Remaining Balance'] = schedule_extra['Remaining Balance'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
 
-    st.dataframe(schedule, use_container_width=True)
+    st.dataframe(schedule_extra, use_container_width=True)
 
     st.subheader("Principal Reduction Area Chart", divider=True)
 
-    # Apply the strip_currency function
-    schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(strip_currency)
 
 
-    # Plot the area chart with remaining principal (balance) over time
-    schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
-    chart_data = schedule[['Year', 'Remaining Balance']].groupby('Year').last().reset_index()
+    # Create the Altair chart
+    base_chart = alt.Chart(combined_schedule).mark_area(opacity=0.5).encode(
+        x=alt.X('Year:Q', title='Year'),
+        y=alt.Y('Remaining Balance:Q', title='Remaining Balance'),
+        color='Type:N',  # Color by Type (With vs Without Extra Payments)
+        tooltip=['Year', 'Remaining Balance', 'Type']
+    ).properties(
+        width=600,
+        height=400
+    )
 
-    # Plot the area chart
-    st.area_chart(chart_data.set_index('Year'))
+    # Display the chart in Streamlit
+    st.altair_chart(base_chart, use_container_width=True)
 
     # Calculate interest saved and months reduced
-    interest_saved = total_interest_no_extra - total_interest
-    months_reduced = total_months_no_extra - total_months
+    interest_saved = total_interest_no_extra - total_interest_extra
+    months_reduced = total_months_no_extra - total_months_extra
 
     interest_saved_round = round(interest_saved, 2)
 
