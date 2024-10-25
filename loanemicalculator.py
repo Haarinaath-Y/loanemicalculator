@@ -27,6 +27,8 @@ def currency(amount, currency_selection, locale):
 
 # Helper function to strip currency symbols, commas, and convert to float
 def strip_currency(value):
+    if isinstance(value, float):
+        return value  # If already a float, return it directly
     # Use regular expressions to remove non-numeric characters (except '.')
     return float(re.sub(r'[^\d.]+', '', value))
 
