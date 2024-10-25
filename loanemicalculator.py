@@ -73,7 +73,7 @@ def main():
 
     # Streamlit app layout
     st.set_page_config(page_title='Mortgage Loan Calculator', page_icon='💸')
-    st.title('Mortgage Loan Calculator')
+    st.title('💸 Mortgage Loan Calculator')
 
     # Currency selection dropdown
     selected_currency = st.selectbox("Select Currency", options=list(CURRENCY_LOCALE_MAP.keys()))
