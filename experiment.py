@@ -11,7 +11,7 @@ def add_payment_row():
 # Remove an extra payment row by index
 def remove_payment_row(index):
     if index < len(st.session_state.extra_payments):
-        st.session_state.extra_payments.pop(index)
+        del st.session_state.extra_payments[index]  # Delete entry at the specified index
 
 # Title and inputs for main loan parameters
 st.title("Mortgage Loan Calculator with Extra Payments")
@@ -24,7 +24,7 @@ st.subheader("Extra Payments")
 
 # Display current extra payments
 for i, payment in enumerate(st.session_state.extra_payments):
-    col1, col2, col3 = st.columns([1, 1, 0.5])
+    col1, col2, col3 = st.columns([1, 1, 0.2])
 
     # Month selector (1 to max tenure in months)
     payment['month'] = col1.number_input(f"Month {i+1}", min_value=1, max_value=loan_tenure*12, key=f"month_{i}")
@@ -35,6 +35,7 @@ for i, payment in enumerate(st.session_state.extra_payments):
     # Remove button
     if col3.button("Remove", key=f"remove_{i}"):
         remove_payment_row(i)
+        st.rerun()  # Rerun to refresh the UI after deletion
 
 # Add new extra payment row button
 if st.button("Add Payment"):
@@ -44,5 +45,4 @@ if st.button("Add Payment"):
 st.write("Extra Payments:")
 st.dataframe(st.session_state.extra_payments)
 
-
-# Pass st.session_state.extra_payments into your amortization calculation function as needed
+# Use st.session_state.extra_payments as input in your amortization calculation as needed
