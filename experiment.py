@@ -40,6 +40,7 @@ for i, payment in enumerate(st.session_state.extra_payments):
 if st.button("Add Payment"):
     add_payment_row()
 
+st.dataframe(st.session_state.extra_payments)
 # Display extra payments
 st.write("Extra Payments:", st.session_state.extra_payments)
 
