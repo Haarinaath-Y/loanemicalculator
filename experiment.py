@@ -24,7 +24,7 @@ st.subheader("Extra Payments")
 
 # Display current extra payments
 for i, payment in enumerate(st.session_state.extra_payments):
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2, col3 = st.columns([1, 1, 0.2])
 
     # Month selector (1 to max tenure in months)
     payment['month'] = col1.number_input(f"Month {i+1}", min_value=1, max_value=loan_tenure*12, key=f"month_{i}")
