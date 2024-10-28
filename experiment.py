@@ -7,7 +7,7 @@ if 'extra_payments' not in st.session_state:
 
 # Add a new empty extra payment row
 def add_payment_row():
-    st.session_state.extra_payments.append({"Month": None, "Amount": 0})
+    st.session_state.extra_payments.append({"month": None, "amount": 0})
 
 
 # Remove an extra payment row by index
