@@ -104,7 +104,7 @@ def main():
     st.info(f'Monthly Installment: **{emi}**')
 
     # Extra payments input section
-    st.subheader("Extra Payments")
+    st.subheader("Extra Payments", divider=True)
 
     # Display current extra payments
     for i, payment in enumerate(st.session_state.extra_payments):
