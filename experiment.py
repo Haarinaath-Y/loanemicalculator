@@ -24,7 +24,7 @@ st.subheader("Extra Payments")
 
 # Display current extra payments
 for i, payment in enumerate(st.session_state.extra_payments):
-    col1, col2, col3 = st.columns([1, 1, 0.2])
+    col1, col2, col3 = st.columns([1, 1, 0.5])
 
     # Month selector (1 to max tenure in months)
     payment['month'] = col1.number_input(f"Month {i+1}", min_value=1, max_value=loan_tenure*12, key=f"month_{i}")
@@ -33,7 +33,7 @@ for i, payment in enumerate(st.session_state.extra_payments):
     payment['amount'] = col2.number_input(f"Amount {i+1}", min_value=0.0, key=f"amount_{i}")
 
     # Remove button
-    if col3.button("Remove", key=f"remove_{i}"):
+    if col3.button("🗑", key=f"remove_{i}"):
         remove_payment_row(i)
         st.rerun()  # Rerun to refresh the UI after deletion
 
