@@ -4,7 +4,6 @@ import numpy as np
 from babel.numbers import format_currency
 import re
 
-
 # Currency-Locale Mapping
 CURRENCY_LOCALE_MAP = {
     'INR': 'en_IN',  # Indian Rupee
