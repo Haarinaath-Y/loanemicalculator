@@ -99,6 +99,10 @@ def main():
     loan_tenure = st.number_input("Loan Tenure (years)", value=20)
     interest_rate = st.number_input("Interest Rate (%)", value=9.35)
 
+    emi, num_payments = calculate_emi(loan_amount, interest_rate, loan_tenure)
+    emi = currency(emi, selected_currency, locale)
+    st.info(f'Monthly Installment: **{emi}**')
+
     # Extra payments input section
     st.subheader("Extra Payments")
 
@@ -125,10 +129,6 @@ def main():
         st.rerun()
 
     extra_payment_dict = {payment['month']: payment['amount'] for payment in st.session_state.extra_payments if payment['month']}
-
-    emi, num_payments = calculate_emi(loan_amount, interest_rate, loan_tenure)
-    emi = currency(emi, selected_currency, locale)
-    st.info(f'Monthly Installment: **{emi}**')
 
     # Display the amortization schedule
     st.subheader("Amortization Schedule", divider=True)
