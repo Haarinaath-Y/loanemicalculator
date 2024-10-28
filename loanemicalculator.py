@@ -124,7 +124,7 @@ def main():
                 st.rerun()  # Rerun to refresh the UI after deletion
 
     # Add new extra payment row button
-    if st.button("Add Payment"):
+    if st.button("👉 Click here to Add Extra Payments"):
         add_payment_row()
         st.rerun()
 
