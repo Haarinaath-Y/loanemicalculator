@@ -4,14 +4,17 @@ import streamlit as st
 if 'extra_payments' not in st.session_state:
     st.session_state.extra_payments = []  # List to store extra payments (month and amount)
 
+
 # Add a new empty extra payment row
 def add_payment_row():
-    st.session_state.extra_payments.append({"month": None, "amount": 0})
+    st.session_state.extra_payments.append({"Month": None, "Amount": 0})
+
 
 # Remove an extra payment row by index
 def remove_payment_row(index):
     if index < len(st.session_state.extra_payments):
         del st.session_state.extra_payments[index]  # Delete entry at the specified index
+
 
 # Title and inputs for main loan parameters
 st.title("Mortgage Loan Calculator with Extra Payments")
@@ -43,6 +46,7 @@ for i, payment in enumerate(st.session_state.extra_payments):
 # Add new extra payment row button
 if st.button("Add Payment"):
     add_payment_row()
+    st.rerun()
 
 # Display extra payments
 st.write("Extra Payments:")
