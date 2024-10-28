@@ -7,9 +7,9 @@ import re
 
 # Currency-Locale Mapping
 CURRENCY_LOCALE_MAP = {
+    'INR': 'en_IN',  # Indian Rupee
     'USD': 'en_US',  # US Dollar
     'EUR': 'fr_FR',  # Euro (France)
-    'INR': 'en_IN',  # Indian Rupee
     'GBP': 'en_GB',  # British Pound
     'JPY': 'ja_JP',  # Japanese Yen
     'CNY': 'zh_CN',  # Chinese Yuan
