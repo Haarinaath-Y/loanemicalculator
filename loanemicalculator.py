@@ -86,8 +86,8 @@ def amortization_schedule(principal, rate, tenure, extra_payments=None):
 def main():
 
     # Streamlit app layout
-    st.set_page_config(page_title='Mortgage Loan Calculator', page_icon='💸')
-    st.title('💸 Mortgage Loan Calculator')
+    st.set_page_config(page_title='Loan EMI Calculator', page_icon='💸')
+    st.title('💸 Loan EMI Calculator')
 
     # Currency selection dropdown
     selected_currency = st.selectbox("Select Currency", options=list(CURRENCY_LOCALE_MAP.keys()))
