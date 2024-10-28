@@ -114,7 +114,7 @@ def main():
     schedule['Extra Payment'] = schedule['Extra Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
     schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
 
-    st.dataframe(schedule, use_container_width=True)
+    st.dataframe(schedule, use_container_width=True, hide_index=True)
 
     st.subheader("Principal Reduction Area Chart", divider=True)
 
