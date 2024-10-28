@@ -38,7 +38,7 @@ for i, payment in enumerate(st.session_state.extra_payments):
     # Add empty space to push the delete button to the bottom
     with col3:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)  # Adjust 'height' as needed
-        if st.button(":material/remove:", key=f"remove_{i}"):
+        if st.button(":material/delete:", key=f"remove_{i}"):
             remove_payment_row(i)
             st.rerun()  # Rerun to refresh the UI after deletion
 
