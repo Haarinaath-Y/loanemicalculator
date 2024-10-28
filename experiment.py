@@ -32,10 +32,13 @@ for i, payment in enumerate(st.session_state.extra_payments):
     # Amount input
     payment['amount'] = col2.number_input(f"Amount {i+1}", min_value=0.0, key=f"amount_{i}")
 
-    # Remove button
-    if col3.button(":material/delete:", key=f"remove_{i}"):
-        remove_payment_row(i)
-        st.rerun()  # Rerun to refresh the UI after deletion
+    # Add empty space to push the delete button to the bottom
+    with col3:
+        st.write("")  # Adds space at the top of the column
+        st.write("")  # Adds more space for alignment if needed
+        if st.button(":material/delete:", key=f"remove_{i}"):
+            remove_payment_row(i)
+            st.rerun()  # Rerun to refresh the UI after deletion
 
 # Add new extra payment row button
 if st.button("Add Payment"):
