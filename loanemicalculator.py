@@ -99,14 +99,14 @@ def main():
     emi = currency(emi, selected_currency, locale)
     st.info(f'Monthly Installment: **{emi}**')
 
+    # Display the amortization schedule
+    st.subheader("Amortization Schedule", divider=True)
+
     # Calculate without extra payments (to compare interest and months)
     schedule_no_extra, total_interest_no_extra, total_months_no_extra = amortization_schedule(loan_amount, interest_rate, loan_tenure)
 
     # Calculate with extra payments
     schedule, total_interest, total_months = amortization_schedule(loan_amount, interest_rate, loan_tenure, extra_payment_dict)
-
-    # Display the amortization schedule
-    st.subheader("Amortization Schedule", divider=True)
 
     # Format currency in the selected currency and locale
     schedule['Interest Payment'] = schedule['Interest Payment'].apply(lambda x: format_currency(x, selected_currency, locale=locale))
@@ -116,11 +116,11 @@ def main():
 
     st.dataframe(schedule, use_container_width=True, hide_index=True)
 
+    # Display Area Chart
     st.subheader("Principal Reduction Area Chart", divider=True)
 
     # Apply the strip_currency function
     schedule['Remaining Balance'] = schedule['Remaining Balance'].apply(strip_currency)
-
 
     # Plot the area chart with remaining principal (balance) over time
     schedule['Year'] = (schedule['Month'] / 12).apply(np.floor)
@@ -145,8 +145,9 @@ def main():
     total_amount_no_extra_paid = total_interest_no_extra + loan_amount
     total_amount_no_extra_paid = currency(total_amount_no_extra_paid, selected_currency, locale=locale)
 
-    st.subheader('Loan Details With Extra Payments', divider=True)
     # Display saved months and interest
+    st.subheader('Loan Details With Extra Payments', divider=True)
+
     st.write(f"Total Amount Paid With Extra Payments: **{total_amount_paid}**")
     st.write(f"Total Interest Paid With Extra Payments: **{total_interest_format}**")
     st.write(f"Interest Saved: **{interest_saved}**")
