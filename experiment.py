@@ -35,7 +35,6 @@ for i, payment in enumerate(st.session_state.extra_payments):
     # Add empty space to push the delete button to the bottom
     with col3:
         st.write("")  # Adds space at the top of the column
-        st.write("")  # Adds more space for alignment if needed
         if st.button(":material/delete:", key=f"remove_{i}"):
             remove_payment_row(i)
             st.rerun()  # Rerun to refresh the UI after deletion
